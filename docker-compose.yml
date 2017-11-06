@@ -1,0 +1,11 @@
+user-server:
+  image: imauld/user-server:0.0.1
+  command: /user-server-bin
+  ports:
+    - "8081:8081"
+  links:
+    - redis
+redis:
+  image: redis
+  ports:
+    - "6379:6379"

@@ -1,0 +1,4 @@
+FROM golang:1.8-alpine
+MAINTAINER Ian Auld<imauld@gmail.com>
+
+RUN mkdir /user-server
