@@ -15,6 +15,20 @@ var (
 	userID     = flag.Int64("userID", 123, "The user ID")
 )
 
+type UserServiceStub struct {
+	client pb.UserServiceClient
+}
+
+func NewStub(addr *string, opts []grpc.DialOption) UserServiceStub {
+	conn, err := grpc.Dial(*serverAddr, opts...)
+	if err != nil {
+		log.Fatalf("fail to dial: %v", err)
+	}
+	defer conn.Close()
+	client := pb.NewUserServiceClient(conn)
+	return UserServiceStub{client: client}
+}
+
 func GetUser(client pb.UserServiceClient, userID int64) {
 	request := &pb.GetUserRequest{UserId: userID}
 	response, _ := client.GetUser(context.Background(), request)
@@ -25,11 +39,6 @@ func main() {
 	flag.Parse()
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithInsecure())
-	conn, err := grpc.Dial(*serverAddr, opts...)
-	if err != nil {
-		log.Fatalf("fail to dial: %v", err)
-	}
-	defer conn.Close()
-	client := pb.NewUserServiceClient(conn)
-	GetUser(client, *userID)
+	stub = NewStub(*serverAddr, opts)
+	stub.GetUser(client, *userID)
 }
